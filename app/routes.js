@@ -22,12 +22,52 @@ export default function createRoutes(store) {
       name: 'home',
       getComponent(nextState, cb) {
         const importModules = Promise.all([
-          System.import('containers/HomePage'),
+          System.import('containers/Home'),
         ]);
 
         const renderRoute = loadModule(cb);
 
         importModules.then(([component]) => {
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
+      path: '/boards',
+      name: 'boards',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          System.import('containers/Boards/reducer'),
+          System.import('containers/Boards/sagas'),
+          System.import('containers/Boards'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('boards', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
+      path: '/recent',
+      name: 'recent',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          System.import('containers/Recent/reducer'),
+          System.import('containers/Recent/sagas'),
+          System.import('containers/Recent'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('recent', reducer.default);
+          injectSagas(sagas.default);
           renderRoute(component);
         });
 
